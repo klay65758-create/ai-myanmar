@@ -6,12 +6,10 @@ app.use(express.json());
 
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
 
-// Home
 app.get("/", (req, res) => {
   res.send("AI Myanmar API Running");
 });
 
-// Text to Image (SDXL)
 app.post("/text-to-image", async (req, res) => {
   try {
     const { prompt } = req.body;
@@ -24,12 +22,7 @@ app.post("/text-to-image", async (req, res) => {
       "https://api.replicate.com/v1/predictions",
       {
         version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
-        input: {
-          prompt: prompt,
-          width: 768,
-          height: 768,
-          num_inference_steps: 25
-        }
+        input: { prompt }
       },
       {
         headers: {
@@ -41,15 +34,14 @@ app.post("/text-to-image", async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
-    if (error.response) {
-      res.status(500).json(error.response.data);
-    } else {
-      res.status(500).json({ error: error.message });
-    }
+    console.log("FULL ERROR:", error.response?.data || error.message);
+    res.status(500).json({
+      error: error.response?.data || error.message
+    });
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+  console.log(`Server running on port ${PORT}`);
 });
