@@ -1,4 +1,3 @@
-
 const express = require("express");
 const axios = require("axios");
 const app = express();
@@ -12,43 +11,24 @@ app.get("/", (req, res) => {
   res.send("AI Myanmar API Running");
 });
 
-// 1️⃣ Text to Image
+// Text to Image (SDXL)
 app.post("/text-to-image", async (req, res) => {
   try {
     const { prompt } = req.body;
 
-    const response = await axios.post(
-      "https://api.replicate.com/v1/predictions",
-      {
-        version: "db21e45d9d5b8b1f1c6d4c2c7f1f6a6d7a6c1c7e1f2d3b4c5a6b7c8d9e0f1a2b", 
-        input: { prompt: prompt }
-      },
-      {
-        headers: {
-          Authorization: `Token ${REPLICATE_API_TOKEN}`,
-          "Content-Type": "application/json"
-        }
-      }
-    );
-
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// 2️⃣ Image to Video (Example model)
-app.post("/image-to-video", async (req, res) => {
-  try {
-    const { image_url, prompt } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required" });
+    }
 
     const response = await axios.post(
       "https://api.replicate.com/v1/predictions",
       {
-        version: "image-to-video-model-version-id",
+        version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
         input: {
-          image: image_url,
-          prompt: prompt
+          prompt: prompt,
+          width: 768,
+          height: 768,
+          num_inference_steps: 25
         }
       },
       {
@@ -61,7 +41,11 @@ app.post("/image-to-video", async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error.response) {
+      res.status(500).json(error.response.data);
+    } else {
+      res.status(500).json({ error: error.message });
+    }
   }
 });
 
