@@ -23,7 +23,8 @@ app.post("/text-to-image", async (req, res) => {
             { inputs: prompt },
             {
                 headers: {
-                    "Authorization": `Bearer ${HF_TOKEN}`,
+                    "Authorization": "Bearer " + HF_TOKEN,
+
                     "Content-Type": "application/json",
                 },
                 responseType: 'arraybuffer'
