@@ -1,28 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AI Creator Myanmar</title>
-  <style>
-    body { font-family: Arial; text-align: center; padding: 20px; }
-    .box { margin: 30px 0; }
-    img, video { max-width: 300px; margin-top: 15px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Creator Myanmar</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        input { padding: 10px; width: 250px; }
+        button { padding: 10px 20px; cursor: pointer; background: #00ad9f; color: white; border: none; border-radius: 5px; }
+        #result { margin-top: 20px; }
+        img { max-width: 100%; border-radius: 10px; }
+    </style>
 </head>
 <body>
+    <h1>🔥 AI Creator Myanmar</h1>
+    <div>
+        <p>🖼️ Text → Image</p>
+        <input type="text" id="promptInput" placeholder="Enter prompt...">
+        <button onclick="generateImage()">Generate</button>
+    </div>
+    <div id="result"></div>
 
-  <h1>🔥 AI Creator Myanmar</h1>
+    <script>
+        async function generateImage() {
+            const prompt = document.getElementById('promptInput').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!prompt) return alert("Please enter a prompt!");
+            
+            resultDiv.innerHTML = "⏳ Generating... Please wait (about 20s)";
+            
+            try {
+                // Netlify Function လိပ်စာကို အတိအကျ ချိတ်ဆက်ခြင်း
+                const response = await fetch('/.netlify/functions/server/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
 
-  <div class="box">
-    <h2>🖼 Text → Image</h2>
-    <input type="text" placeholder="Enter prompt">
-    <button>Generate</button>
-  </div>
-
-  <div class="box">
-    <h2>🎬 Image → Video</h2>
-    <input type="file">
-    <button>Animate</button>
-  </div>
-
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    resultDiv.innerHTML = `<img src="${imageUrl}" alt="AI Generated Image">`;
+                } else {
+                    resultDiv.innerHTML = "❌ Error: Could not generate image.";
+                }
+            } catch (error) {
+                resultDiv.innerHTML = "❌ Error: " + error.message;
+            }
+        }
+    </script>
 </body>
 </html>
