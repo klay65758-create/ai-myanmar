@@ -19,7 +19,7 @@ app.post("/text-to-image", async (req, res) => {
 
         // URL ကို router.huggingface.co သို့ ပြောင်းလဲထားသည်
         const response = await axios.post(
-            "https://router.huggingface.co/hf-inference/models/runwayml/stable-diffusion-v1-5",
+            "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1"
             { inputs: prompt },
             {
                 headers: {
